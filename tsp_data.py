@@ -14,6 +14,18 @@ class Tsp:
             X.append(points), Y.append(solved)
         return np.asarray(X), np.asarray(Y)
 
+    """
+    def overfit(self, batch_size=1):
+        X, Y = [], []
+        print("preparing dataset... ")
+        points = self.generate_data()
+        solved = self.solve_tsp_dynamic(points)
+        for b in range(batch_size):
+            X.append(points), Y.append(solved)
+        return np.asarray(X), np.asarray(Y)
+    """
+
+
     def length(self, x, y):
         return (math.sqrt((x[0]-y[0])**2 + (x[1]-y[1])**2))
 
