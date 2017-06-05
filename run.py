@@ -17,7 +17,7 @@ def scheduler(epoch):
 
 print("preparing dataset...")
 
-seq_len = 5
+seq_len = 4
 
 t = tsp.Tsp()
 X, Y = t.next_batch(100, seq_len)
