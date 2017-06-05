@@ -5,11 +5,12 @@ import itertools
 
 
 class Tsp:
-    def next_batch(self, batch_size=1):
+    def next_batch(self, batch_size=1, seq_length=10):
         X, Y = [], []
         for b in range(batch_size):
-            print("preparing dataset... %s/%s" % (b, batch_size))
-            points = self.generate_data()
+            if b%100 == 0:
+                print("preparing dataset... %s/%s" % (b, batch_size))
+            points = self.generate_data(seq_length)
             solved = self.solve_tsp_dynamic(points)
             X.append(points), Y.append(solved)
         return np.asarray(X), np.asarray(Y)
