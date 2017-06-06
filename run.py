@@ -9,7 +9,7 @@ import simple_seq as seq
 import numpy as np
 
 def scheduler(epoch):
-    return learning_rate
+    #return learning_rate
     if epoch < nb_epochs/4:
         return learning_rate
     elif epoch < nb_epochs/2:
@@ -18,19 +18,19 @@ def scheduler(epoch):
 
 print("preparing dataset...")
 
-seq_len = 5
-encoding_len=2
+seq_len = 9
+encoding_len=6
 
 s = seq.Simple_Seq()
-X, Y = s.next_batch(1000, seq_len, encoding_len)
+X, Y = s.next_batch(10000, seq_len, encoding_len)
 #X, Y = t.overfit(10000)
-x_test, y_test = s.next_batch(2)
+x_test, y_test = s.next_batch(20, seq_len, encoding_len)
 
 YY = np.eye(seq_len)[Y]
 
-hidden_size = 128
-nb_epochs =  10
-learning_rate = 0.3
+hidden_size = 32
+nb_epochs =  15
+learning_rate = 1.0
 
 print("building model...")
 main_input = Input(shape=(seq_len, encoding_len), name='main_input')
@@ -45,10 +45,10 @@ model.compile(optimizer='adadelta',
 
 model.fit(X, YY, epochs=nb_epochs, batch_size=64,callbacks=[LearningRateScheduler(scheduler),])
 #print(model.predict(x_test))
-predictions = model.predict(X)
+predictions = model.predict(x_test)
 pred_index = np.array([np.argmax(predictions[i],0) for i in xrange(len(predictions))])
-print(pred_index[:5])
+print(pred_index[:10])
 print("------")
-print(Y[:5])
+print(y_test[:10])
 #print(to_categorical(y_test))
 model.save_weights('model_weight_100.hdf5')
