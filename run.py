@@ -4,7 +4,8 @@ from keras.callbacks import LearningRateScheduler
 from keras.utils.np_utils import to_categorical
 from PointerLSTM import PointerLSTM
 import pickle
-import tsp_data as tsp
+#import tsp_data as tsp
+import simple_seq as seq
 import numpy as np
 
 def scheduler(epoch):
@@ -17,34 +18,32 @@ def scheduler(epoch):
 
 print("preparing dataset...")
 
-seq_len = 4
+seq_len = 5
+encoding_len=2
 
-t = tsp.Tsp()
-X, Y = t.next_batch(100, seq_len)
+s = seq.Simple_Seq()
+X, Y = s.next_batch(1000, seq_len, encoding_len)
 #X, Y = t.overfit(10000)
-x_test, y_test = t.next_batch(2)
+x_test, y_test = s.next_batch(2)
 
-YY = []
-for y in Y:
-    YY.append(to_categorical(y))
-YY = np.asarray(YY)
+YY = np.eye(seq_len)[Y]
 
 hidden_size = 128
 nb_epochs =  10
 learning_rate = 0.3
 
 print("building model...")
-main_input = Input(shape=(seq_len, 2), name='main_input')
+main_input = Input(shape=(seq_len, encoding_len), name='main_input')
 
-encoder = LSTM(output_dim = hidden_size, return_sequences = True, name="encoder")(main_input)
-decoder = PointerLSTM(hidden_size, output_dim=hidden_size, name="decoder")(encoder)
+encoder = LSTM(units = hidden_size, return_sequences=True,name="encoder")(main_input)
+decoder = PointerLSTM(hidden_size, units=hidden_size, return_sequences=False,name="decoder")(encoder)
 
 model = Model(inputs=main_input, outputs=decoder)
 model.compile(optimizer='adadelta',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-model.fit(X, YY, nb_epoch=nb_epochs, batch_size=64,callbacks=[LearningRateScheduler(scheduler),])
+model.fit(X, YY, epochs=nb_epochs, batch_size=64,callbacks=[LearningRateScheduler(scheduler),])
 #print(model.predict(x_test))
 predictions = model.predict(X)
 pred_index = np.array([np.argmax(predictions[i],0) for i in xrange(len(predictions))])

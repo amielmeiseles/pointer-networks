@@ -38,7 +38,11 @@ class PointerLSTM(LSTM):
                                              constants=constants,
                                              input_length=input_shape[1])
 
-        return outputs
+        #code to enable returning single output
+        if self.return_sequences:
+            return outputs
+        else:
+            return last_output
 
     def step(self, x_input, states):
         input_shape = self.input_spec[0].shape
@@ -60,4 +64,8 @@ class PointerLSTM(LSTM):
 
     def compute_output_shape(self, input_shape):
         # output shape is not affected by the attention component
-        return (input_shape[0], input_shape[1], input_shape[1])
+        # code to return single output
+        if self.return_sequences:
+            return (input_shape[0], input_shape[1], input_shape[1])
+        else:
+            return (input_shape[0], input_shape[1])
